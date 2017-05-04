@@ -1,0 +1,13 @@
+{
+  "extends": [
+    "standard"
+  ],
+  "env": {
+    "worker": true,
+    "browser": true
+  },
+  "parser": "babel-eslint",
+  "plugins": [
+    "html"
+  ]
+}
