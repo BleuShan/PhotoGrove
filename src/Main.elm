@@ -1,8 +1,17 @@
 module Main exposing (..)
 
-import Html exposing (..)
+import Html
+import Rocket
+import Home.Types exposing (Model, Msg, Flags)
+import Home.State exposing (update, init, subscriptions)
+import Home.View exposing (view)
 
 
-main : Html msg
+main : Program Flags Model Msg
 main =
-    text "No model"
+    Html.programWithFlags
+        { init = init >> Rocket.batchInit
+        , update = update >> Rocket.batchUpdate
+        , view = view
+        , subscriptions = subscriptions
+        }

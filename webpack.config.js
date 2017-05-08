@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ResourceHintWebpackPlugin = require('resource-hints-webpack-plugin')
 const DashboardPlugin = require('webpack-dashboard/plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
-const pkg = require('./package.json')
+const {name: title} = require('./package.json')
 
 const joinPath = (...paths) => join(__dirname, ...paths)
 const resolvePath = (...paths) => resolve(__dirname, ...paths)
@@ -30,7 +30,7 @@ const plugins = [
     minimize: !isDev
   }),
   new HtmlWebpackPlugin({
-    title: pkg.name,
+    title,
     template: resolve('index.ejs')
   }),
   new ResourceHintWebpackPlugin()
@@ -59,6 +59,7 @@ if (isDev) {
   })
   plugins.push(
     new DashboardPlugin(),
+    new webpack.NamedModulesPlugin(),
     new webpack.HotModuleReplacementPlugin()
   )
 } else {
