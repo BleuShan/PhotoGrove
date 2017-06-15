@@ -39,10 +39,14 @@ type SharedStyleClasses
     | IsGrid
     | IsMultiLine
     | IsGapless
+    | Level
+    | LevelRight
+    | LevelLeft
+    | LevelItem
 
 
 type SharedStyleIds
-    = Main
+    = Root
 
 
 primaryColor : Color
@@ -186,9 +190,14 @@ screenMinWidthMediaQuery width =
     mediaQuery ("screen and (min-width:" ++ (toString width) ++ "px)")
 
 
+screenMaxWidthMediaQuery : number -> List Snippet -> Snippet
+screenMaxWidthMediaQuery width =
+    mediaQuery ("screen and (max-width:" ++ (toString width) ++ "px)")
+
+
 mobile : List Snippet -> Snippet
 mobile =
-    screenMinWidthMediaQuery (tabletPxWidth - 1)
+    screenMaxWidthMediaQuery (tabletPxWidth - 1)
 
 
 tabletPxWidth : number
@@ -231,6 +240,22 @@ fullhd =
     screenMinWidthMediaQuery (fullhdPxWidth + 40)
 
 
+pulledLevel : Mixin
+pulledLevel =
+    mixin
+        [ alignItems center
+        , flexBasis auto
+        , flexGrow zero
+        , flexShrink zero
+        , descendants
+            [ class LevelItem
+                [ pseudoClass "not(:last-child)"
+                    [ marginRight (Css.rem 0.75) ]
+                ]
+            ]
+        ]
+
+
 css : Stylesheet
 css =
     (stylesheet << namespace sharedNamespace.name)
@@ -243,17 +268,23 @@ css =
             , after [ boxSizing inherit ]
             ]
         , body
-            [ backgroundColor (rgb 44 44 44)
+            [ backgroundColor (hex "#4c4c4c")
             , color white
             ]
         , img
             [ border3 (px 1) solid white
-            , margin (px 5)
             ]
         , h1
             [ fontFamilies [ "Verdana", "Helvetica", .value sansSerif ]
             , color primaryColor
             ]
+        , id Root
+            [ displayFlex
+            , flexDirection column
+            , minHeight (vh 100)
+            ]
+        , main_
+            [ flex (num 1) ]
         , class Column <|
             [ display block
             , flex2 (num 1) zero
@@ -296,6 +327,76 @@ css =
         , class Container
             [ position relative
             ]
+        , class Level
+            [ marginBottom (Css.rem 1.5)
+            , alignItems center
+            , justifyContent spaceBetween
+            , descendants
+                [ img
+                    [ display inlineBlock
+                    , verticalAlign top
+                    ]
+                ]
+            ]
+        , class LevelItem
+            [ alignItems baseline
+            , displayFlex
+            , flexBasis auto
+            , flexGrow zero
+            , flexShrink zero
+            , justifyContent center
+            , descendants
+                [ selector """[type="radio"]:not(:last-child)"""
+                    [ marginRight (Css.rem 0.25) ]
+                ]
+            ]
+        , class LevelLeft
+            [ pulledLevel
+            , justifyContent flexStart
+            ]
+        , class LevelRight
+            [ pulledLevel
+            , justifyContent flexEnd
+            ]
+        , button
+            [ textTransform uppercase
+            , fontSize (px 13)
+            , backgroundColor (hex "#60b5cc")
+            , border zero
+            , borderRadius (px 2)
+            , padding2 zero (Css.rem 2)
+            , height (px 36)
+            , lineHeight (px 36)
+            , outline zero
+            , zIndex (int 1)
+            , cursor pointer
+            , property "transition" "all 300ms ease-out"
+            , property "box-shadow"
+                "0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2)"
+            , hover
+                [ property "box-shadow"
+                    "0 3px 3px 0 rgba(0,0,0,0.14), 0 1px 7px 0 rgba(0,0,0,0.12), 0 3px 1px -1px rgba(0,0,0,0.2)"
+                , color (hex "#f9f9f9")
+                ]
+            , active
+                [ backgroundColor (hex "#4c4c4c")
+                , property "transition" "all 25ms ease"
+                , property "box-shadow"
+                    "0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2)"
+                ]
+            ]
+        , mobile
+            [ class LevelItem
+                [ pseudoClass "not(:last-child)"
+                    [ marginBottom (Css.rem 0.75) ]
+                ]
+            , class LevelLeft
+                [ adjacentSiblings
+                    [ class LevelRight
+                        [ marginTop (Css.rem 1.5) ]
+                    ]
+                ]
+            ]
         , tablet
             [ class Columns
                 [ withClass IsGrid
@@ -311,6 +412,17 @@ css =
                         ]
                     ]
                 ]
+            , class Level
+                [ displayFlex
+                , children
+                    [ class LevelItem
+                        [ flexGrow (num 1) ]
+                    ]
+                ]
+            , class LevelRight
+                [ displayFlex ]
+            , class LevelLeft
+                [ displayFlex ]
             ]
         , desktop
             [ class Container

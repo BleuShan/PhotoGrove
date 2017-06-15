@@ -1,19 +1,25 @@
 module Home.Helpers exposing (..)
 
-import Home.Types as Types exposing (..)
 import Home.Style as Style exposing (..)
+import Home.Types as Types exposing (..)
+import Json.Decode exposing (Decoder, int, string)
+import Json.Decode.Pipeline exposing (decode, optional, required)
 import List.Extra as List
-import Maybe.Extra exposing ((?))
 
 
-getPhotoUrlByIndex : Int -> List Photo -> String
+getPhotoByUrl : String -> List Photo -> Maybe Photo
+getPhotoByUrl url photos =
+    List.find ((==) url << .url) photos
+
+
+getPhotoUrlByIndex : Int -> List Photo -> Maybe String
 getPhotoUrlByIndex index photos =
-    List.getAt index photos ? { url = "" } |> .url
+    Maybe.map .url (List.getAt index photos)
 
 
 getPhotoSourceUrl : ThumbnailSize -> String -> String -> String
-getPhotoSourceUrl size urlPrefix photoUrl =
-    case size of
+getPhotoSourceUrl thumbnailSize urlPrefix photoUrl =
+    case thumbnailSize of
         Types.Large ->
             urlPrefix ++ "large/" ++ photoUrl
 
@@ -21,9 +27,20 @@ getPhotoSourceUrl size urlPrefix photoUrl =
             urlPrefix ++ photoUrl
 
 
+photoDecoder : Decoder Photo
+photoDecoder =
+    decode Photo
+        |> required "url" string
+        |> required "size" int
+        |> optional "title" string "(untitled)"
+
+
 sizeToString : ThumbnailSize -> String
 sizeToString size =
     case size of
+        Types.Small ->
+            "small"
+
         Types.Medium ->
             "medium"
 
@@ -34,6 +51,9 @@ sizeToString size =
 sizeToClass : ThumbnailSize -> HomeClasses
 sizeToClass size =
     case size of
+        Types.Small ->
+            Style.Small
+
         Types.Medium ->
             Style.Medium
 

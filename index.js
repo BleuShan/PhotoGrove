@@ -9,4 +9,4 @@ const flags = {
   urlPrefix: null
 }
 
-Elm.Main.embed(document.querySelector('main'), flags)
+Elm.Main.fullscreen(flags)

@@ -18,13 +18,15 @@ import SharedStyle exposing (white, primaryColor)
 
 
 type HomeClasses
-    = Medium
+    = Small
+    | Medium
     | Large
     | Selected
 
 
 type HomeIds
     = Thumbnails
+    | Preview
 
 
 homeNamespace : Namespace String HomeClasses HomeIds Msg
@@ -50,22 +52,48 @@ homeClassList =
 css : Stylesheet
 css =
     (stylesheet << namespace homeNamespace.name)
-        [ class Medium
-            [ width (px 200)
-            ]
-        , class Large
-            [ width (px 500)
-            ]
-        , class Selected
-            [ margin zero
-            , border3 (px 6) solid primaryColor
+        [ id Preview
+            [ descendants
+                [ img
+                    [ width (px 500)
+                    , property "box-shadow"
+                        "0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2)"
+                    , hover
+                        [ property "box-shadow"
+                            "0 3px 3px 0 rgba(0,0,0,0.14), 0 1px 7px 0 rgba(0,0,0,0.12), 0 3px 1px -1px rgba(0,0,0,0.2)"
+                        , zIndex (int 1)
+                        ]
+                    ]
+                ]
             ]
         , id Thumbnails
             [ descendants
                 [ img
                     [ cursor pointer
+                    , property "transition" "all 300ms ease"
+                    , property "box-shadow"
+                        "0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2)"
                     , withClass Selected
                         [ cursor default
+                        , property "box-shadow"
+                            "0 3px 3px 0 rgba(0,0,0,0.14), 0 1px 7px 0 rgba(0,0,0,0.12), 0 3px 1px -1px rgba(0,0,0,0.2)"
+                        , border3 (px 3) solid primaryColor
+                        , zIndex (int 1)
+                        ]
+                    , withClass Small
+                        [ width (px 50)
+                        ]
+                    , withClass Medium
+                        [ width (px 100)
+                        ]
+                    , withClass Large
+                        [ width (px 200)
+                        ]
+                    , pseudoClass "hover:not(.PhotoGrove-Home__Selected)"
+                        [ property "box-shadow"
+                            "0 3px 3px 0 rgba(0,0,0,0.14), 0 1px 7px 0 rgba(0,0,0,0.12), 0 3px 1px -1px rgba(0,0,0,0.2)"
+                        , border3 (px 1) solid primaryColor
+                        , zIndex (int 1)
                         ]
                     ]
                 ]

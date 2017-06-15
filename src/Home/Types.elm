@@ -1,14 +1,20 @@
 module Home.Types exposing (..)
 
+import Http
+
 
 type Msg
     = None
     | SelectPhotoByUrl String
     | SelectPhotoByIndex Int
+    | SelectThumbnailSize ThumbnailSize
+    | SurpriseMe
+    | LoadPhotos (Result Http.Error (List Photo))
 
 
 type ThumbnailSize
-    = Medium
+    = Small
+    | Medium
     | Large
 
 
@@ -21,7 +27,9 @@ type alias Flags =
 
 type alias Model =
     { photos : List Photo
-    , selectedPhotoUrl : String
+    , selectedPhotoUrl : Maybe String
+    , loaded : Bool
+    , loadingError : Maybe String
     , selectedThumbnailSize : ThumbnailSize
     , flags :
         { name : String
@@ -32,4 +40,7 @@ type alias Model =
 
 
 type alias Photo =
-    { url : String }
+    { url : String
+    , size : Int
+    , title : String
+    }
